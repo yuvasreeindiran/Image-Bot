@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - ImageBot</title>
+    <link rel="stylesheet" href="styles.css">
+<style>
+/* Slide-in animations */
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInFromRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.slide-in-left {
+    opacity: 0;
+    animation: slideInFromLeft 2s ease-in-out forwards;
+}
+
+.slide-in-right {
+    opacity: 0;
+    animation: slideInFromRight 2s ease-in-out forwards;
+}
+</style>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const slideElements = document.querySelectorAll('.slide-in-left, .slide-in-right');
+
+    const observerOptions = {
+        root: null, // Observes based on viewport
+        threshold: 0.1, // 10% visibility threshold to trigger animation
+    };
+
+    const onIntersection = (entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active'); // Trigger animation when visible
+                observer.unobserve(entry.target); // Stop observing once animated
+            }
+        });
+    };
+
+    const observer = new IntersectionObserver(onIntersection, observerOptions);
+
+    slideElements.forEach(element => observer.observe(element));
+});
+</script> 
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">ImageBot</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html" class="active">About</a></li>
+                <li><a href="reviews.html">Reviews</a></li>
+                <li class="dropdown">
+                    <a href="#">Features &#9662;</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="search.html">Search Image</a></li>
+                        <li><a href="features.html">Analyze Image</a></li>
+                    </ul>
+                </li>
+                <li><a href="support.html">Support</a></li>
+                <li><a href="login.html" class="btn">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+<br><br><br><br>
+    <main class="about-container">
+        <div class="content-box slide-in-left">
+            <h1>About <span class="highlight">ImageBot</span></h1>
+            <p>
+                <span class="highlight">ImageBot</span> is an innovative AI-powered platform designed for image recognition and object detection. Whether you're a researcher, wildlife enthusiast, or just curious about image analysis, ImageBot delivers real-time precision results.
+            </p>
+        </div>
+
+        <div class="content-box slide-in-right">
+            <h2>Our Mission</h2>
+            <p>
+                We aim to make <span class="highlight">AI-driven image analysis</span> simple and accessible, providing cutting-edge AI technology with an intuitive user experience to empower individuals and organizations.
+            </p>
+        </div>
+
+        <div class="content-box slide-in-left">
+            <h2>Key Features</h2>
+            <ul class="feature-list">
+                <li>🚀 <span class="highlight">Real-Time Image Analysis</span></li>
+                <li>🔍 <span class="highlight">Elephant Species Detection</span></li>
+                <li>💡 <span class="highlight">Chatbot Assistance</span></li>
+            </ul>
+        </div>
+
+        <div class="content-box slide-in-right">
+            <h2>Why Choose ImageBot?</h2>
+            <ul class="feature-list">
+                <li>✅ <span class="highlight">Accurate</span>: Advanced ML models.</li>
+                <li>✅ <span class="highlight">Fast</span>: Results in seconds.</li>
+                <li>✅ <span class="highlight">User-Friendly</span>: Easy to use.</li>
+                <li>✅ <span class="highlight">Secure</span>: Data privacy guaranteed.</li>
+            </ul>
+        </div>
+
+        <a href="features.html" class="cta-button">Explore Features</a>
+    </main>
+<br><br><br><br>
+</body>
+</html>

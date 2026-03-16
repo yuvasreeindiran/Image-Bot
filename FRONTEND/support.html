@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImageBot Support Chatbot</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(270deg, #1e3c72, #2a5298); /* Darker gradient */
+    color: white;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Chat Container - Dark Transparent */
+.chat-container {
+    width: 400px;
+    height: 500px;
+    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.5); /* Darker Transparent */
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideInLeft 1s ease-in-out;
+}
+
+/* Chat Header */
+.chat-header {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    text-align: center;
+    padding: 15px;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+    animation: bounce 1.5s infinite alternate;
+}
+
+/* Chat Messages */
+.chat-messages {
+    flex: 1;
+    padding: 12px;
+    overflow-y: auto;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    scroll-behavior: smooth;
+}
+
+/* Chat Input */
+.chat-input {
+    display: flex;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    outline: none;
+    transition: 0.3s ease-in-out;
+}
+
+.chat-input input:focus {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 5px 10px rgba(255, 255, 255, 0.3);
+
+}
+.chat-input input::placeholder {
+  color: white !important;
+  opacity: 1;
+}
+/* Send Button - Rotate Only on Hover */
+.chat-input button {
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+}
+
+.chat-input button:hover {
+    background: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.4);
+}
+
+/* Review Section - Dark Transparent */
+.review-container {
+    background: rgba(0, 0, 0, 0.6); /* Darker Transparent */
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInLeft {
+    from { transform: translateX(-50px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-5px); }
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .chat-container {
+        width: 90%;
+        height: 450px;
+    }
+}
+.dropdown-menu li {
+    margin-top:16px;
+    list-style: none;
+    width:150px;
+    margin-bottom:7px;
+    margin-right:7px;
+    margin-left:7px;
+}
+
+    </style>
+</head>
+<body>
+<header>
+     <nav>
+            <div class="logo">ImageBot</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html" class="active">About</a></li>
+                <li><a href="reviews.html">Reviews</a></li>
+                <li class="dropdown">
+                    <a href="#">Features &#9662;</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="search.html">Search Image</a></li>
+                        <li style="margin-top:1px;"><a href="features.html">Analyze Image</a></li>
+                    </ul>
+                </li>
+
+                <li><a href="support.html">Support</a></li>
+                <li><a href="login.html" class="btn">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="chat-container">
+        <div class="chat-header">ImageBot Support Chatbot</div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Ask me anything...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+    function sendMessage() {
+        const input = document.getElementById('userInput');
+        const message = input.value.trim();
+        if (message === '') return;
+
+        const chatBox = document.getElementById('chatMessages');
+        chatBox.innerHTML += `<div><strong>You:</strong> ${message}</div>`;
+
+        // Send message to Flask backend
+        fetch('http://127.0.0.1:5000/support_chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_message: message })
+        })
+        .then(response => response.json())
+        .then(data => {
+            chatBox.innerHTML += `<div><strong>Bot:</strong> ${data.reply}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to latest message
+        })
+        .catch(error => {
+            chatBox.innerHTML += `<div style="color: red;"><strong>Error:</strong> Could not connect to server.</div>`;
+        });
+
+        input.value = ''; // Clear input field
+    }
+</script>
+
+</body>
+</html>

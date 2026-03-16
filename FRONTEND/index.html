@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImageBot - AI Chatbot</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
+<style>
+.dropdown-menu li {
+    margin-top:16px;
+    list-style: none;
+    width:150px;
+    margin-bottom:7px;
+    margin-right:7px;
+    margin-left:7px;
+}
+        .dropdown ul {
+            display: none;
+        }
+        .dropdown:hover ul {
+            display: block;
+        }
+</style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">ImageBot</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html" class="active">About</a></li>
+                <li><a href="reviews.html">Reviews</a></li>
+                <li class="dropdown">
+                    <a href="#" onclick="toggleSearch()">Features &#9662;</a> <!-- toggleSearch() is kept -->
+                    <ul class="dropdown-menu">
+                        <li><a href="search.html">Search Image</a></li>
+                        <li><a href="features.html">Analyze Image</a></li>
+                    </ul>
+                </li>
+                <li><a href="support.html">Support</a></li>
+                <li><a href="login.html" class="btn" id="loginLink">Login</a></li>
+	        <li class="nav-item dropdown">
+  </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Revolutionizing Image Recognition with AI</h1>
+        <p>Experience seamless AI-powered chatbot interactions</p>
+        <a href="signup.html" class="cta-button">Get Started</a>
+    </section>
+
+    <section class="features">
+        <h2 class="slide-in-left">Why Choose ImageBot?</h2>
+        <div class="feature-grid">
+            <div class="feature-item slide-in-left" onclick="toggleFeature('feature1', this)">
+                <h3>Smart AI</h3>
+                <p>Experience high-accuracy image recognition with advanced AI algorithms.</p>
+                <div class="feature-content" id="feature1">
+                    <p>ImageBot’s AI system uses deep learning and computer vision to recognize images with near-human accuracy. It adapts to various environments, making it suitable for medical imaging, security, and real-time object detection.</p>
+                </div>
+            </div>
+            <div class="feature-item slide-in-left" onclick="toggleFeature('feature2', this)">
+                <h3>User Friendly</h3>
+                <p>Easy-to-use interface designed for users of all backgrounds.</p>
+                <div class="feature-content" id="feature2">
+                    <p>ImageBot’s intuitive UI allows users to upload images, chat with AI, and receive results in seconds. Whether you're a beginner or an AI expert, the platform ensures a seamless experience.</p>
+                </div>
+            </div>
+            <div class="feature-item slide-in-left" onclick="toggleFeature('feature3', this)">
+                <h3>Secure & Private</h3>
+                <p>Data encryption ensures your interactions remain private.</p>
+                <div class="feature-content" id="feature3">
+                    <p>ImageBot follows the latest encryption protocols, ensuring that your data is never stored or shared. With end-to-end security, you can trust that your interactions are confidential.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 ImageBot | AI-Powered Chatbot</p>
+    </footer>
+
+    <script>
+        // Existing JavaScript functionality (toggleFeature and toggleSearch)
+        function toggleFeature(id, element) {
+            let contents = document.querySelectorAll('.feature-content');
+            let items = document.querySelectorAll('.feature-item');
+
+            contents.forEach(content => {
+                if (content.id !== id) {
+                    content.classList.remove("active");
+                }
+            });
+
+            items.forEach(item => {
+                if (item !== element) {
+                    item.classList.remove("expanded");
+                }
+            });
+
+            let currentContent = document.getElementById(id);
+            currentContent.classList.toggle("active");
+            element.classList.toggle("expanded");
+        }
+
+        function toggleSearch() {
+            console.log("Toggle Search Clicked!");
+            // Placeholder for additional search toggle logic
+        }
+
+        // New Scroll Animation Code (intersection observer)
+        document.addEventListener('DOMContentLoaded', () => {
+            const slideInElements = document.querySelectorAll('.slide-in-left');
+
+            const observerOptions = {
+                root: null,
+                threshold: 0.1,
+            };
+
+            const handleScrollAnimation = (entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            };
+
+            const observer = new IntersectionObserver(handleScrollAnimation, observerOptions);
+            slideInElements.forEach(element => observer.observe(element));
+
+            // Check login status and update navbar dynamically
+            async function updateNav() {
+                let response = await fetch('http://127.0.0.1:5000/current_user');
+                if (response.ok) {
+                    let user = await response.json();
+                    const nav = document.querySelector(".nav-links");
+                    nav.innerHTML += `
+                        <li class="dropdown">
+                            <a href="#">${user.name} <i class="fas fa-user-circle"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#" id="logoutBtn">Sign Out</a></li>
+                            </ul>
+                        </li>`;
+                    document.getElementById("loginLink").style.display = "none";
+                    document.getElementById("logoutBtn").addEventListener("click", async () => {
+                        await fetch('http://127.0.0.1:5000/logout', { method: 'POST' });
+                        window.location.href = "login.html";
+                    });
+                }
+            }
+
+            updateNav();
+        });
+
+ 
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const loginButton = document.getElementById("loginButton");
+    const userMenu = document.getElementById("userMenu");
+    const userDropdown = document.getElementById("userDropdown");
+
+    // Fetch the currently logged-in user
+    fetch('/current_user')
+        .then(response => response.json())
+        .then(data => {
+            if (data.email) {
+                userMenu.innerHTML = `
+                    <button id="userEmail" class="btn dropdown-toggle" data-toggle="dropdown">
+                        ${data.email}
+                    </button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item" id="logoutButton">Sign Out</button>
+                    </div>
+                `;
+
+                document.getElementById("logoutButton").addEventListener("click", function () {
+                    fetch('/logout', { method: 'POST' })
+                        .then(() => window.location.reload());
+                });
+            }
+        });
+});
+
+    </script>
+</body>
+</html>

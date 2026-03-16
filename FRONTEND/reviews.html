@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews - ImageBot</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(270deg, #1e3c72, #2a5298);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .edit-btn, .delete-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+            transition: 0.3s;
+        }
+
+        .edit-btn:hover, .delete-btn:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .review-container {
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 100px;
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease-in-out;
+            animation: slideIn 2s ease-out;
+        }
+.review-container h2{
+animation: glow 1.5s infinite alternate;
+}
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .review-container:hover {
+            transform: scale(1.02);
+        }
+
+        .review {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.2);
+            transition: 0.3s;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        .review:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .review h2 {
+            animation: glow 1.5s infinite alternate;
+        }
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 10px #FFD700, 0 0 20px #FFA500;
+  }
+  to {
+    text-shadow: 0 0 20px #FFD700, 0 0 30px #FFA500;
+  }
+}
+
+        .review-form input, .review-form textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: black;
+            font-size: 16px;
+            transition: all 0.3s ease-in-out;
+        }
+ .review-form input::placeholder {
+  color: white !important;
+  opacity: 1;
+}
+.review-form textarea::placeholder {
+  color: white !important;
+  opacity: 1;
+}
+
+
+        .review-form input:focus, .review-form textarea:focus {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .review-form button {
+            background: linear-gradient(45deg, #FFA500, #FFD700);
+            color: black;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .review-form button:hover {
+            background: #ffdb4d;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">ImageBot</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="reviews.html" class="active">Reviews</a></li>
+                <li class="dropdown">
+                    <a href="#">Features &#9662;</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="search.html">Search Image</a></li>
+                        <li><a href="features.html">Analyze Image</a></li>
+                    </ul>
+                </li>
+                <li><a href="support.html">Support</a></li>
+                <li><a href="login.html" class="btn">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="review-container" id="reviewBox">
+        <h2>User Reviews</h2>
+        <div id="reviews">
+            <div class="review"><strong>Ram:</strong> ImageBot is amazing! The AI recognition is so accurate.</div>
+            <div class="review"><strong>Ramya:</strong> Fantastic chatbot. Helped me identify elephants instantly!</div>
+        </div>
+
+        <form class="review-form" id="reviewForm">
+            <input type="text" id="name" placeholder="Your Name" required>
+            <textarea id="reviewText" rows="3" placeholder="Write your review..." required></textarea>
+            <button type="submit">Submit Review</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let reviewsContainer = document.getElementById("reviews");
+            let submitBtn = document.querySelector(".review-form button");
+            let currentEditingIndex = null;
+            let savedReviews = JSON.parse(localStorage.getItem("reviews")) || [];
+
+            function renderReviews() {
+                reviewsContainer.innerHTML = "";
+                savedReviews.forEach((review, index) => {
+                    let reviewElement = document.createElement("div");
+                    reviewElement.classList.add("review");
+                    reviewElement.innerHTML = `
+                        <span><strong>${review.name}:</strong> ${review.text}</span>
+                        <div>
+                            <button class="edit-btn" onclick="editReview(${index})">Edit</button>
+                            <button class="delete-btn" onclick="deleteReview(${index})">Delete</button>
+                        </div>
+                    `;
+                    reviewsContainer.appendChild(reviewElement);
+                });
+            }
+
+            document.getElementById("reviewForm").onsubmit = function (event) {
+                event.preventDefault();
+                let name = document.getElementById("name").value;
+                let reviewText = document.getElementById("reviewText").value;
+
+                if (currentEditingIndex !== null) {
+                    savedReviews[currentEditingIndex] = { name, text: reviewText };
+                    currentEditingIndex = null;
+                    submitBtn.textContent = "Submit Review"; 
+                } else {
+                    savedReviews.push({ name, text: reviewText });
+                }
+
+                localStorage.setItem("reviews", JSON.stringify(savedReviews));
+                renderReviews();
+                document.getElementById("reviewForm").reset();
+            };
+
+            window.deleteReview = function (index) {
+                savedReviews.splice(index, 1);
+                localStorage.setItem("reviews", JSON.stringify(savedReviews));
+                renderReviews();
+            };
+
+            window.editReview = function (index) {
+                let review = savedReviews[index];
+                document.getElementById("name").value = review.name;
+                document.getElementById("reviewText").value = review.text;
+                currentEditingIndex = index;
+                submitBtn.textContent = "Update Review"; 
+            };
+
+            renderReviews();
+        });
+    </script>
+</body>
+</html>
+
